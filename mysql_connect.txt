@@ -1,0 +1,44 @@
+gcloud sql instances create nrtmysql111 --database-version=MYSQL_5_7 --tier=db-n1-standard-1 --region=us-east1 --root-password=Password1234
+$MYSQLIP = $(gcloud sql instances describe nrtmysql111 --format="value(ipAddresses.ipAddress)")
+$MYLOCALIP = (Invoke-WebRequest -uri "https://api.ipify.org/").Content
+$PASSWORD="Password1234"
+mysqlsh --host=$MYSQLIP --user=root --password=$PASSWORD --verbose --sql
+
+mysqlsh --host=$MYSQLIP --user=user1 --password=$PASSWORD --verbose --file createtable.sql
+
+# Create & Query Database
+create database if not exists db1;
+use db1;
+
+drop table if exists employees;
+
+create table employees (
+  companyid VARCHAR(255), 
+  lastname VARCHAR(255), 
+  firstname VARCHAR(255), 
+  hiredate VARCHAR(255), 
+  salary VARCHAR(255), 
+  fullname VARCHAR(255)
+);
+
+describe employees;
+
+select fullname,salary from employees ordery by salary desc;
+
+\quit
+
+
+# Add data to Cloud SQL instance
+gsutil cp gs://cloud-training/OCBL013/nyc_tlc_yellow_trips_2018_subset_1.csv trips.csv-1
+gsutil cp gs://cloud-training/OCBL013/nyc_tlc_yellow_trips_2018_subset_2.csv trips.csv-2
+
+# Import CSV
+gcloud sql import csv nrtmysql111 gs://nrtbucket1/allemployees.csv --database=db1 --table=employees
+
+# Check Data
+mysqlsh --host=$MYSQLIP --user=root  --password --sql
+use db1;
+select * from employees;
+
+
+
