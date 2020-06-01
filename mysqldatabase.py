@@ -1,12 +1,13 @@
 import mysql.connector
 
-newuser="user1@nrtmysql1"
+newuser="user1"
 password = "Password1234"
 database="mysql"
+hostip="35.239.134.244"
 
 # Connect to Server
 mysrv = mysql.connector.connect(
-  host="34.71.122.233",
+  host=hostip,
   user="root",
   passwd=password,
   database=database
@@ -19,12 +20,12 @@ mycursor.execute("CREATE DATABASE db01")
 # Create New User
 createuser = "CREATE USER " + newuser + " IDENTIFIED BY " + "'" + password + "'" + ";"
 mycursor.execute(createuser)
-databasegrantnewuser = "GRANT ALL PRIVILEGES ON " + database + " TO " + newuser + " IDENTIFIED BY " + "'" + password +"'" + ";"
+databasegrantnewuser = "GRANT ALL PRIVILEGES ON " + "db01" + " TO " + newuser + " IDENTIFIED BY " + "'" + password +"'" + ";"
 mycursor.execute(databasegrantnewuser)
 
 # Connect to mysql default database
 mydb = mysql.connector.connect(
-  host="34.71.122.233",
+  host=hostip,
   user=newuser,
   passwd=password,
   database=database
@@ -35,13 +36,6 @@ mycursor.execute("CREATE TABLE employees (companyid VARCHAR(255), lastname VARCH
 mycursor.execute("SHOW TABLES")
 for t in mycursor:
   print(t)
-
-sql = """LOAD DATA INFILE 'allemployees.csv' 
-INTO TABLE employees 
-FIELDS TERMINATED BY ',' 
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS; """
 
 dbcursor1.execute(sql)
 
