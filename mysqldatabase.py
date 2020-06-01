@@ -1,6 +1,6 @@
 import mysql.connector
 
-newuser="mysqluser01"
+newuser="user1@nrtmysql1"
 password = "Password1234"
 database="mysql"
 
